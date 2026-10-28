@@ -7,18 +7,34 @@ become sub-folders; pinned tabs become bookmarks. Favorites (top apps) get their
 own folder.
 
 Usage:
-    python3 arc_export.py                       # writes arc_bookmarks.html
+    python3 arc_export.py                       # writes exports/arc_bookmarks.html
     python3 arc_export.py -o out.html --unpinned --split
 """
 
 import argparse
 import html
 import json
+import os
 import sys
 import time
 from pathlib import Path
 
-DEFAULT_SIDEBAR = Path.home() / "Library/Application Support/Arc/StorableSidebar.json"
+
+def find_sidebar():
+    """Locate StorableSidebar.json on macOS or Windows (Arc ships as an MSIX package there)."""
+    candidates = [Path.home() / "Library/Application Support/Arc/StorableSidebar.json"]
+    local_appdata = os.environ.get("LOCALAPPDATA")
+    if local_appdata:
+        packages = Path(local_appdata) / "Packages"
+        candidates += sorted(packages.glob("TheBrowserCompany.Arc*/LocalCache/Local/Arc/StorableSidebar.json"))
+    for path in candidates:
+        if path.exists():
+            return path
+    return candidates[0]
+
+
+DEFAULT_SIDEBAR = find_sidebar()
+DEFAULT_OUTPUT = Path("exports") / "arc_bookmarks.html"
 
 
 def pairs(flat):
@@ -174,10 +190,14 @@ def print_tree(nodes, depth=0):
 def main():
     p = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     p.add_argument("-i", "--input", type=Path, default=DEFAULT_SIDEBAR, help=f"path to StorableSidebar.json (default: {DEFAULT_SIDEBAR})")
-    p.add_argument("-o", "--output", type=Path, default=Path("arc_bookmarks.html"), help="output HTML file")
+    p.add_argument("-o", "--output", type=Path, default=DEFAULT_OUTPUT, help=f"output HTML file (default: {DEFAULT_OUTPUT})")
     p.add_argument("--unpinned", action="store_true", help="also export unpinned (Today) tabs into an 'Unpinned tabs' sub-folder")
     p.add_argument("--split", action="store_true", help="additionally write one HTML file per space (handy for Zen workspaces)")
     args = p.parse_args()
+
+    # Windows consoles may not default to UTF-8; keep emoji/titles from crashing print().
+    if hasattr(sys.stdout, "reconfigure"):
+        sys.stdout.reconfigure(encoding="utf-8", errors="replace")
 
     if not args.input.exists():
         sys.exit(f"Not found: {args.input}\nIs Arc installed? Pass the file with --input.")
@@ -187,6 +207,7 @@ def main():
     if not folders:
         sys.exit("No spaces found in the sidebar file.")
 
+    args.output.parent.mkdir(parents=True, exist_ok=True)
     args.output.write_text(to_html(folders), encoding="utf-8")
     b, f = count(folders)
     print_tree(folders)

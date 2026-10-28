@@ -2,7 +2,12 @@
 
 Arc browser is being deprecated. This script exports your Arc **spaces, folders, sub-folders and pinned tabs** into a standard bookmarks HTML file. You can import that file into Zen, Chrome, Firefox, Brave, Edge or Safari.
 
-Arc doesn't have a proper bookmark export. Everything lives in `~/Library/Application Support/Arc/StorableSidebar.json`. This script reads that file and keeps your structure:
+Arc doesn't have a proper bookmark export. Everything lives in a `StorableSidebar.json` file, which the script finds automatically:
+
+- **macOS:** `~/Library/Application Support/Arc/StorableSidebar.json`
+- **Windows:** `%LOCALAPPDATA%\Packages\TheBrowserCompany.Arc_*\LocalCache\Local\Arc\StorableSidebar.json`
+
+The script reads that file and keeps your structure:
 
 | Arc | Export |
 |---|---|
@@ -15,13 +20,15 @@ Arc doesn't have a proper bookmark export. Everything lives in `~/Library/Applic
 
 ## Requirements
 
-- macOS with Arc installed
-- Python 3.8+ (no dependencies)
+- macOS or Windows with Arc installed
+- Python 3.8+ (standard library only, no dependencies). On Windows, use `python` or `py` in place of `python3`.
 
 ## Usage
 
+Output goes to `./exports/`, which is git-ignored.
+
 ```bash
-python3 arc_export.py                       # pinned items → arc_bookmarks.html
+python3 arc_export.py                       # pinned items → exports/arc_bookmarks.html
 python3 arc_export.py --unpinned            # also include unpinned tabs
 python3 arc_export.py --split               # also write one HTML file per space
 python3 arc_export.py -i path/to/StorableSidebar.json -o out.html
@@ -36,7 +43,7 @@ The script prints a tree of what it exported:
 📁 Work (5)
   📁 Pull Requests (4)
 ...
-Wrote arc_bookmarks.html — 94 bookmarks in 12 folders.
+Wrote exports/arc_bookmarks.html — 94 bookmarks in 12 folders.
 ```
 
 ## Importing
@@ -49,4 +56,4 @@ Wrote arc_bookmarks.html — 94 bookmarks in 12 folders.
 
 - The export is a snapshot of what's in Arc right now. Live folders, such as GitHub pull requests, are saved as static links.
 - Only `StorableSidebar.json` is read. Arc is never modified.
-- The generated HTML files contain your personal browsing data, and `.gitignore` excludes them.
+- The generated HTML files contain your personal browsing data. They're written to `exports/`, which `.gitignore` excludes.
