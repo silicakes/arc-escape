@@ -1,0 +1,52 @@
+# arc-escape
+
+Arc browser is being deprecated. This script exports your Arc **spaces, folders, sub-folders and pinned tabs** into a standard bookmarks HTML file. You can import that file into Zen, Chrome, Firefox, Brave, Edge or Safari.
+
+Arc doesn't have a proper bookmark export. Everything lives in `~/Library/Application Support/Arc/StorableSidebar.json`. This script reads that file and keeps your structure:
+
+| Arc | Export |
+|---|---|
+| Space | Top-level folder |
+| Folder / sub-folder (any depth) | Nested folder |
+| Pinned tab | Bookmark (with your custom title) |
+| Favorites (top icons) | `Favorites` folder |
+| Split view | Small folder holding its tabs |
+| Unpinned "Today" tabs | `Unpinned tabs` sub-folder (optional) |
+
+## Requirements
+
+- macOS with Arc installed
+- Python 3.8+ (no dependencies)
+
+## Usage
+
+```bash
+python3 arc_export.py                       # pinned items → arc_bookmarks.html
+python3 arc_export.py --unpinned            # also include unpinned tabs
+python3 arc_export.py --split               # also write one HTML file per space
+python3 arc_export.py -i path/to/StorableSidebar.json -o out.html
+```
+
+The script prints a tree of what it exported:
+
+```
+📁 Favorites (3)
+📁 Personal (11)
+  📁 Recipes (2)
+📁 Work (5)
+  📁 Pull Requests (4)
+...
+Wrote arc_bookmarks.html — 94 bookmarks in 12 folders.
+```
+
+## Importing
+
+**Zen / Firefox:** open Bookmarks → Manage bookmarks (⌘⇧O). Click the **⇅** button and choose **Import Bookmarks from HTML…**. The imported folders appear under **Bookmarks Menu**. To recreate your spaces, create a Zen workspace for each one. Then open its folder with "Open All in Tabs" and pin the tabs you want to keep. Add Favorites to Essentials.
+
+**Chrome / Brave / Edge:** open `chrome://bookmarks`, click ⋮ and choose **Import bookmarks**. To get something close to Arc's sidebar, right-click a space's folder and choose **Open all in new tab group**, then save the group.
+
+## Notes
+
+- The export is a snapshot of what's in Arc right now. Live folders, such as GitHub pull requests, are saved as static links.
+- Only `StorableSidebar.json` is read. Arc is never modified.
+- The generated HTML files contain your personal browsing data, and `.gitignore` excludes them.

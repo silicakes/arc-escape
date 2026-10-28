@@ -218,3 +218,7 @@ __marimo__/
 
 # Streamlit
 .streamlit/secrets.toml
+
+# Exported bookmarks (personal data)
+arc_bookmarks*.html
+zen/
