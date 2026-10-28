@@ -8,7 +8,7 @@ own folder.
 
 Usage:
     python3 arc_export.py                       # writes exports/arc_bookmarks.html
-    python3 arc_export.py -o out.html --unpinned --split
+    python3 arc_export.py -o out.html --exclude unpinned --split
 """
 
 import argparse
@@ -95,8 +95,11 @@ def container_children(cid, items, seen):
     return [n for n in (build_node(c, items, seen) for c in items[cid].get("childrenIds", [])) if n]
 
 
-def extract(sidebar, include_unpinned):
-    """Return a list of top-level folders (one per space plus Favorites)."""
+SECTIONS = ("favorites", "pinned", "unpinned")
+
+
+def extract(sidebar, exclude=()):
+    """Return a list of top-level folders (one per space plus Favorites), skipping excluded sections."""
     folders = []
     for container in sidebar["sidebar"]["containers"]:
         if "spaces" not in container or "items" not in container:
@@ -108,23 +111,27 @@ def extract(sidebar, include_unpinned):
             continue
         seen = set()
 
-        favorites = []
-        for cid in (v for v in container.get("topAppsContainerIDs", []) if isinstance(v, str)):
-            favorites += container_children(cid, items, seen)
-        if favorites:
-            folders.append({"title": "Favorites", "children": favorites})
+        if "favorites" not in exclude:
+            favorites = []
+            for cid in (v for v in container.get("topAppsContainerIDs", []) if isinstance(v, str)):
+                favorites += container_children(cid, items, seen)
+            if favorites:
+                folders.append({"title": "Favorites", "children": favorites})
 
         for space in spaces:
             title = space.get("title") or "Untitled space"
             profile = profile_name(space)
             if profile:
                 title = f"{title} ({profile})"
-            children = container_children(container_id(space, "pinned"), items, seen)
-            if include_unpinned:
+            children = []
+            if "pinned" not in exclude:
+                children += container_children(container_id(space, "pinned"), items, seen)
+            if "unpinned" not in exclude:
                 unpinned = container_children(container_id(space, "unpinned"), items, seen)
                 if unpinned:
                     children.append({"title": "Unpinned tabs", "children": unpinned})
-            folders.append({"title": title, "children": children})
+            if children:
+                folders.append({"title": title, "children": children})
     return folders
 
 
@@ -191,7 +198,8 @@ def main():
     p = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     p.add_argument("-i", "--input", type=Path, default=DEFAULT_SIDEBAR, help=f"path to StorableSidebar.json (default: {DEFAULT_SIDEBAR})")
     p.add_argument("-o", "--output", type=Path, default=DEFAULT_OUTPUT, help=f"output HTML file (default: {DEFAULT_OUTPUT})")
-    p.add_argument("--unpinned", action="store_true", help="also export unpinned (Today) tabs into an 'Unpinned tabs' sub-folder")
+    p.add_argument("--exclude", action="append", choices=SECTIONS, default=[], metavar="SECTION",
+                   help=f"skip a section; repeatable. One of: {', '.join(SECTIONS)} (default: export everything)")
     p.add_argument("--split", action="store_true", help="additionally write one HTML file per space (handy for Zen workspaces)")
     args = p.parse_args()
 
@@ -203,7 +211,7 @@ def main():
         sys.exit(f"Not found: {args.input}\nIs Arc installed? Pass the file with --input.")
 
     with args.input.open(encoding="utf-8") as f:
-        folders = extract(json.load(f), args.unpinned)
+        folders = extract(json.load(f), set(args.exclude))
     if not folders:
         sys.exit("No spaces found in the sidebar file.")
 

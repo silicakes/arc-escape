@@ -1,0 +1,51 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="320" viewBox="0 0 1200 320" role="img" aria-label="arc-escape: take your Arc spaces, folders and tabs with you">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#14122b"/>
+      <stop offset="1" stop-color="#241a3d"/>
+    </linearGradient>
+    <linearGradient id="arc" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0" stop-color="#ff5f6d"/>
+      <stop offset="0.5" stop-color="#c86dd7"/>
+      <stop offset="1" stop-color="#4f8cff"/>
+    </linearGradient>
+    <linearGradient id="trail" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0" stop-color="#4f8cff" stop-opacity="0"/>
+      <stop offset="1" stop-color="#4f8cff"/>
+    </linearGradient>
+  </defs>
+
+  <rect width="1200" height="320" rx="24" fill="url(#bg)"/>
+
+  <!-- faint grid dots -->
+  <g fill="#ffffff" opacity="0.06">
+    <circle cx="80" cy="60" r="2"/><circle cx="140" cy="250" r="2"/><circle cx="1120" cy="70" r="2"/>
+    <circle cx="1060" cy="270" r="2"/><circle cx="620" cy="40" r="2"/><circle cx="700" cy="290" r="2"/>
+  </g>
+
+  <!-- the arc, broken open on the right -->
+  <path d="M 110 230 A 100 100 0 1 1 290 170" fill="none" stroke="url(#arc)" stroke-width="26" stroke-linecap="round"/>
+
+  <!-- escaping trail + arrow -->
+  <path d="M 300 160 C 340 140, 370 130, 410 128" fill="none" stroke="url(#trail)" stroke-width="6" stroke-linecap="round" stroke-dasharray="2 14"/>
+  <path d="M 404 112 L 432 128 L 404 144" fill="none" stroke="#4f8cff" stroke-width="6" stroke-linecap="round" stroke-linejoin="round"/>
+
+  <!-- title -->
+  <text x="480" y="150" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="72" font-weight="700" fill="#ffffff">arc-escape</text>
+  <text x="482" y="200" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="26" fill="#b9b3d6">Take your spaces, folders &amp; tabs with you.</text>
+
+  <!-- destination chips -->
+  <g font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="18" font-weight="600" fill="#ffffff">
+    <rect x="482" y="228" width="80" height="36" rx="18" fill="#ffffff" fill-opacity="0.08" stroke="#ffffff" stroke-opacity="0.15"/>
+    <text x="522" y="252" text-anchor="middle">Zen</text>
+    <rect x="574" y="228" width="104" height="36" rx="18" fill="#ffffff" fill-opacity="0.08" stroke="#ffffff" stroke-opacity="0.15"/>
+    <text x="626" y="252" text-anchor="middle">Chrome</text>
+    <rect x="690" y="228" width="104" height="36" rx="18" fill="#ffffff" fill-opacity="0.08" stroke="#ffffff" stroke-opacity="0.15"/>
+    <text x="742" y="252" text-anchor="middle">Firefox</text>
+    <rect x="806" y="228" width="120" height="36" rx="18" fill="#ffffff" fill-opacity="0.08" stroke="#ffffff" stroke-opacity="0.15"/>
+    <text x="866" y="252" text-anchor="middle">+ any other</text>
+  </g>
+
+  <!-- bookmark ribbon -->
+  <path d="M 1040 96 h 64 v 128 l -32 -26 l -32 26 z" fill="url(#arc)" opacity="0.9"/>
+</svg>

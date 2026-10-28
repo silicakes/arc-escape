@@ -1,3 +1,16 @@
+<p align="center">
+  <img src="assets/banner.svg" alt="arc-escape — take your spaces, folders & tabs with you" width="100%">
+</p>
+
+<p align="center">
+  <img src="https://img.shields.io/badge/python-3.8%2B-3776AB?logo=python&logoColor=white" alt="Python 3.8+">
+  <img src="https://img.shields.io/badge/platform-macOS%20%7C%20Windows-555?logo=apple&logoColor=white" alt="macOS | Windows">
+  <img src="https://img.shields.io/badge/dependencies-none-brightgreen" alt="No dependencies">
+  <img src="https://img.shields.io/badge/exports%20to-Zen%20%7C%20Chrome%20%7C%20Firefox-c86dd7" alt="Exports to Zen, Chrome, Firefox">
+  <a href="LICENSE"><img src="https://img.shields.io/github/license/silicakes/arc-escape" alt="MIT License"></a>
+  <a href="https://github.com/silicakes/arc-escape/stargazers"><img src="https://img.shields.io/github/stars/silicakes/arc-escape?style=flat" alt="GitHub stars"></a>
+</p>
+
 # arc-escape
 
 Arc browser is being deprecated. This script exports your Arc **spaces, folders, sub-folders and pinned tabs** into a standard bookmarks HTML file. You can import that file into Zen, Chrome, Firefox, Brave, Edge or Safari.
@@ -16,7 +29,9 @@ The script reads that file and keeps your structure:
 | Pinned tab | Bookmark (with your custom title) |
 | Favorites (top icons) | `Favorites` folder |
 | Split view | Small folder holding its tabs |
-| Unpinned "Today" tabs | `Unpinned tabs` sub-folder (optional) |
+| Unpinned "Today" tabs | `Unpinned tabs` sub-folder |
+
+By default it exports everything, so you get your current Arc state. Use `--exclude` to leave sections out.
 
 ## Requirements
 
@@ -28,8 +43,9 @@ The script reads that file and keeps your structure:
 Output goes to `./exports/`, which is git-ignored.
 
 ```bash
-python3 arc_export.py                       # pinned items → exports/arc_bookmarks.html
-python3 arc_export.py --unpinned            # also include unpinned tabs
+python3 arc_export.py                       # everything → exports/arc_bookmarks.html
+python3 arc_export.py --exclude unpinned    # skip unpinned (Today) tabs
+python3 arc_export.py --exclude unpinned --exclude favorites   # pinned items only
 python3 arc_export.py --split               # also write one HTML file per space
 python3 arc_export.py -i path/to/StorableSidebar.json -o out.html
 ```
